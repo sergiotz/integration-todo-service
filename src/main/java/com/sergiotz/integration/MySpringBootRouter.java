@@ -13,12 +13,19 @@ public class MySpringBootRouter extends RouteBuilder {
 
     @Override
     public void configure() {
-        from("timer:hello?period={{timer.period}}").routeId("hello")
-            .transform().method("myBean", "saySomething")
-            .filter(simple("${body} contains 'foo'"))
-                .to("log:foo")
-            .end()
-            .to("stream:out");
+
+        restConfiguration()
+            .component("servlet");
+            
+        rest("/things")
+            .get("")
+                .to("direct:get-things");
+
+        from("direct:get-things")
+            .process(exchange -> {
+
+            })
+            .end();
     }
 
 }
